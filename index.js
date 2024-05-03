@@ -18,6 +18,8 @@ app.get('/',(request,response) =>{
     response.send('hola mundo')
 })
 
+app.use('/api/Web/clientes',require('./routes/loginRoute'))
+
 app.listen(4500 , ()=> {
     console.log("El servidor funcionando")
 })
