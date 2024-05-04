@@ -1,6 +1,7 @@
 const conexionBD = require('../config/db')
 const Dueño = require('../models/dueño');
 const Empleado = require('../models/empleado');
+const nodemailer = require('nodemailer');
 
 const crypto = require('crypto');
 
@@ -78,3 +79,104 @@ exports.crearUsuario = async (request, response) => {
       response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: CREAR USUARIO');
     }
   };
+
+  exports.enviarContraseña = async (request, response) => {
+    try {
+        const { destinatario } = request.body;
+        const asunto = 'Recuperacion Clave';
+        const query = 'SELECT id FROM dueños WHERE correo = ?';
+        conexionBD.query(query, [destinatario], (err, results) => {
+            if (err) {
+                console.log(err);
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: BUSCAR DATOS');
+            } else if (results.length === 0) {
+              const query = 'SELECT id FROM empleados WHERE correo = ?';
+              conexionBD.query(query, [destinatario], (err, results) => {
+              if (err) {
+                console.log(err);
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: BUSCAR DATOS');
+              } else if (results.length === 0) {
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: NO SE HA ENCONTRADO EL CORREO');                
+              } else {
+                const query = 'UPDATE empleados set contrasenia = ? WHERE id = ?';
+                const contrasenia = generarContraseniaAleatoria(10)
+                const hash = crypto.createHash('sha256');
+                hash.update(contrasenia);
+                const contraseniaHash = hash.digest('hex');
+                const id = results[0].id
+                console.log(contrasenia)
+  
+                conexionBD.query(query, [contraseniaHash,id], (err, results) => {
+                  if (err) {
+                    console.log(err);
+                    response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR CONTRASEÑA');
+                  } else {
+                    const mensaje = `Hola, tu contraseña es: ${contrasenia}. Mensaje enviado por los servicios GourmetGO.`;
+                    enviarCorreo(destinatario, asunto, mensaje,response);
+                  }
+                });
+              }
+              });                       
+            } else {
+              const query = 'UPDATE dueños set contrasenia = ? WHERE id = ?';
+              const contrasenia = generarContraseniaAleatoria(10)
+              const hash = crypto.createHash('sha256');
+              hash.update(contrasenia);
+              const contraseniaHash = hash.digest('hex');
+              const id = results[0].id
+              console.log(contrasenia)
+
+              conexionBD.query(query, [contraseniaHash,id], (err, results) => {
+                if (err) {
+                  console.log(err);
+                  response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR CONTRASEÑA');
+                } else {
+                  const mensaje = `Hola, tu contraseña temporal es: ${contrasenia}. Mensaje enviado por los servicios GourmetGO.`;
+                  enviarCorreo(destinatario, asunto, mensaje,response);
+                }
+              });
+            }
+          });
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+    }
+};
+
+const enviarCorreo= async (destinatario, asunto, mensaje,response) => {
+  try {
+    //deben crear en su outlook una contrase;a para aplicacion, ahi podran probar
+    const correo_empresa = ''
+    const clave_empresa = ''
+    let transporter = nodemailer.createTransport({
+      host: "smtp.office365.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: correo_empresa,
+        pass: clave_empresa
+      }
+    });
+    console.log(mensaje)
+    let info = await transporter.sendMail({
+      from: `"GOURMETGO" <${correo_empresa}>`,
+      to: destinatario,
+      subject: asunto,
+      text: mensaje
+    });
+
+    response.status(200).send('CORREO ENVIADO DE MANERA EXITOSA');
+  } catch (error) {
+    response.status(500).send('CORREO FALLIDO');
+  }
+};
+
+function generarContraseniaAleatoria(longitud) {
+  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+  let contrasenia = '';
+  for (let i = 0; i < longitud; i++) {
+    contrasenia += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+  }
+
+  return contrasenia;
+}
