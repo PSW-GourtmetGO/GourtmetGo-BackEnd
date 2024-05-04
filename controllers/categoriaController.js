@@ -44,3 +44,28 @@ exports.crearCategoria = async (request, response) => {
     }
 };
 
+exports.obtenerCategoria = async (request, response) => {
+    try {
+        const { categoria_id } = request.query;
+        let query = 'SELECT * FROM categorias WHERE id = ?';
+
+        conexionBD.query(query, [categoria_id], (err, categorias) => {
+            if (err) {
+                console.log(err);
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCIÓN DE CATEGORÍA');
+                return;
+            }
+            if (categorias.length === 0) {
+                response.status(404).send('NO EXISTEN LA CATEGORIA');
+            } else {
+                console.log(categorias);
+                response.json(categorias);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENER CATEGORÍA');
+    }
+};
+
+
