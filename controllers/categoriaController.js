@@ -91,4 +91,24 @@ exports.eliminarCategoria = async (request, response) => {
     }
 };
 
-
+exports.actualizarCategoria = async (request, response) => {
+    try {
+      const { nombre,descripcion, categoria_id} = request.body;
+      const query = 'UPDATE categorias set nombre=?,descripcion=? WHERE id = ?';
+      conexionBD.query(query, [nombre,descripcion, categoria_id], (err, results) => {
+        if (err) {
+            console.log(err);
+            response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZACIÓN DE CATEGORÍA');
+            return;
+        }
+        if (results.affectedRows === 0) {
+            response.status(404).send('NO SE ENCONTRÓ LA CATEGORÍA A ACTUALIZAR');
+        } else {
+            response.status(200).send('CATEGORÍA ACTUALIZADA CORRECTAMENTE');
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR CATEGORIA');
+    }
+  };
