@@ -19,3 +19,28 @@ exports.crearCategoria = async (request, response) => {
       response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: CREAR CATEGORIA');
     }
   };
+
+  exports.obtenerCategorias = async (request, response) => {
+    try {
+        const { restaurante_id } = request.query;
+        let query = 'SELECT * FROM categorias WHERE restaurante_id = ?';
+
+        conexionBD.query(query, [restaurante_id], (err, categorias) => {
+            if (err) {
+                console.log(err);
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCIÓN DE CATEGORÍAS');
+                return;
+            }
+            if (categorias.length === 0) {
+                response.status(404).send('NO EXISTEN CATEGORIAS');
+            } else {
+                console.log(categorias);
+                response.json(categorias);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENER CATEGORÍAS');
+    }
+};
+
