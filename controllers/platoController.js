@@ -19,10 +19,34 @@ exports.crearPlato = async (request, response) => {
     }
   };
 
-exports.obtenerPlatos = async (request, response) => {
+exports.obtenerPlatosDueño = async (request, response) => {
     try {
         const { restaurante_id } = request.query;
-        let query = 'SELECT p.* FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.restaurante_id = s.id AND s.id=? AND p.eliminado = 1 AND c.estado = 1 ORDER BY c.nombre';
+        let query = 'SELECT p.* FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.restaurante_id = s.id AND s.id=? AND p.eliminado = 1 AND c.estado = 1';
+
+        conexionBD.query(query, [restaurante_id], (err, platos) => {
+            if (err) {
+                console.log(err);
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCION DE PLATOS');
+                return;
+            }
+            if (platos.length === 0) {
+                response.status(404).send('NO EXISTEN PLATOS');
+            } else {
+                console.log(platos);
+                response.json(platos);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCION DE PLATOS');
+    }
+};
+
+exports.obtenerPlatosUsuarios = async (request, response) => {
+    try {
+        const { restaurante_id } = request.query;
+        let query = 'SELECT p.* FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.restaurante_id = s.id AND s.id=? AND p.eliminado = 1 AND p.estado=1 AND c.estado = 1 ORDER BY c.nombre';
 
         conexionBD.query(query, [restaurante_id], (err, platos) => {
             if (err) {
@@ -90,4 +114,26 @@ exports.eliminarPlato = async (request, response) => {
         response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ELIMINAR PLATO');
     }
 };
+
+exports.actualizarPlato = async (request, response) => {
+    try {
+      const { plato_id,nombre,precio,descripcion,imagen,categoria_id,estado} = request.body;
+      const query = 'UPDATE platos set nombre=?,precio=?,descripcion=?,imagen=?,categoria_id=?,estado=? WHERE id = ?';
+      conexionBD.query(query, [nombre,precio,descripcion,imagen,categoria_id,estado,plato_id], (err, results) => {
+        if (err) {
+            console.log(err);
+            response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR PLATO');
+            return;
+        }
+        if (results.affectedRows === 0) {
+            response.status(404).send('NO SE ENCONTRÓ EL PLATO A ACTUALIZAR');
+        } else {
+            response.status(200).send('PLATO ACTUALIZADO CORRECTAMENTE');
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR PLATO');
+    }
+  };
   
