@@ -46,7 +46,7 @@ exports.obtenerPlatos = async (request, response) => {
 exports.obtenerPlato = async (request, response) => {
     try {
         const { plato_id } = request.query;
-        let query = 'SELECT * FROM platos WHERE id = ?';
+        let query = 'SELECT * FROM platos WHERE id = ? and eliminado = 1';
 
         conexionBD.query(query, [plato_id], (err, platos) => {
             if (err) {
@@ -65,6 +65,29 @@ exports.obtenerPlato = async (request, response) => {
     } catch (error) {
         console.log(error);
         response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENER PLATO');
+    }
+};
+
+exports.eliminarPlato = async (request, response) => {
+    try {
+        const { plato_id } = request.query; 
+        let query = 'UPDATE platos SET eliminado = 0 WHERE id = ?'; 
+
+        conexionBD.query(query, [plato_id], (err, resultado) => {
+            if (err) {
+                console.log(err);
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ELIMINAR PLATO');
+                return;
+            }
+            if (resultado.affectedRows === 0) {
+                response.status(404).send('NO SE ENCONTRÓ EL PLATO A ELIMINAR');
+            } else {
+                response.status(200).send('PLATO ELIMINADO CORRECTAMENTE');
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ELIMINAR PLATO');
     }
 };
   
