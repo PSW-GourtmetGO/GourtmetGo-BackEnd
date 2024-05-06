@@ -72,3 +72,26 @@ exports.obtenerEmpleado = async (request, response) => {
       response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENER EMPLEADO');
   }
 };
+
+exports.eliminarEmpleado = async (request, response) => {
+  try {
+      const { empleado_id } = request.query; 
+      let query = 'DELETE FROM empleados WHERE id = ?'; 
+
+      conexionBD.query(query, [empleado_id], (err, resultado) => {
+          if (err) {
+              console.log(err);
+              response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ELIMINAR EMPLEADO');
+              return;
+          }
+          if (resultado.affectedRows === 0) {
+              response.status(404).send('ERROR DURANTE EL PROCEDIMIENTO: NO SE ENCONTRO EL EMPLEADO');
+          } else {
+              response.status(200).send('EMPLEADO ELIMINADO CORRECTAMENTE');
+          }
+      });
+  } catch (error) {
+      console.log(error);
+      response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ELIMINAR EMPLEADO');
+  }
+};
