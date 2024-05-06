@@ -21,6 +21,7 @@ app.get('/',(request,response) =>{
 app.use('/api/Web/clientes',require('./routes/loginRoute'))
 app.use('/api/Web/categoria',require('./routes/categoriaRoute'))
 app.use('/api/Web/plato',require('./routes/platoRoute'))
+app.use('/api/Web/empleado',require('./routes/empleadoRoute'))
 
 app.listen(4500 , ()=> {
     console.log("El servidor funcionando")
