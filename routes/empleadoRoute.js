@@ -6,4 +6,5 @@ router.post('/',empleadoController.crearEmpleado)
 router.get('/',empleadoController.obtenerEmpleados)
 router.get('/get',empleadoController.obtenerEmpleado)
 router.delete('/',empleadoController.eliminarEmpleado)
+router.put('/',empleadoController.actualizarEmpleado)
 module.exports= router

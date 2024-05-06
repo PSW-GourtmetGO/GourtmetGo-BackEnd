@@ -95,3 +95,25 @@ exports.eliminarEmpleado = async (request, response) => {
       response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ELIMINAR EMPLEADO');
   }
 };
+
+exports.actualizarEmpleado = async (request, response) => {
+  try {
+    const { cedula, nombre, apellido, correo, telefono, direccion, empleado_id } = request.body;
+    const query = 'UPDATE empleados SET cedula=?, nombre=?, apellido=?, correo=?, telefono=?, direccion=? WHERE id = ?';
+    conexionBD.query(query, [cedula, nombre, apellido, correo, telefono, direccion, empleado_id], (err, results) => {
+      if (err) {
+        console.log(err);
+        response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR EMPLEADO');
+        return;
+      }
+      if (results.affectedRows === 0) {
+        response.status(404).send('NO SE ENCONTRÓ EL EMPLEADO A ACTUALIZAR');
+      } else {
+        response.status(200).send('EMPLEADO ACTUALIZADO CORRECTAMENTE');
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR EMPLEADO');
+  }
+};
