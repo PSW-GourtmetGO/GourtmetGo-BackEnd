@@ -44,19 +44,19 @@ exports.buscarLogeo = async (request, response) => {
 
 exports.crearUsuario = async (request, response) => {
     try {
-      const { cedula,nombre,apellido,telefono,direccion,correo, contrasenia,nombreRestaurante } = request.body;
-      const query = 'INSERT INTO restaurantes VALUES(0,?,?,null,1)';
-      conexionBD.query(query, [nombreRestaurante,direccion], (err, results) => {
+      const { cedula,nombre,apellido,correo, contrasenia,fechaNacimiento,nombreRestaurante } = request.body;
+      const query = 'INSERT INTO restaurantes VALUES(0,?,null,1)';
+      conexionBD.query(query, [nombreRestaurante], (err, results) => {
         if (err) {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: CREAR RESTAURANTE');
         } else {
             const restauranteData = results.insertId;
-            const query = 'INSERT INTO dueños VALUES(0,?,?,?,?,?,?,null,?,?,1,1)';
+            const query = 'INSERT INTO dueños VALUES(0,?,?,?,?,?,?,null,?,1,1)';
             const hash = crypto.createHash('sha256');
             hash.update(contrasenia);
             const contraseniaHash = hash.digest('hex');
-            conexionBD.query(query, [cedula,nombre,apellido,correo, contraseniaHash,telefono,direccion,restauranteData], (err, results) => {
+            conexionBD.query(query, [cedula,nombre,apellido,correo, contraseniaHash,fechaNacimiento,restauranteData], (err, results) => {
                 if (err) {
                     console.log(err);
                     const query = 'DELETE FROM restaurantes Where id = ?';
