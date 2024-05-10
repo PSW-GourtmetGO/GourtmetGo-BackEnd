@@ -68,8 +68,16 @@ exports.crearUsuario = async (request, response) => {
                         }
                       });
                 }else {
-                  console.log(results);
-                  response.status(200).send('PROCESO REALIZADO DE MANERA EXITOSA');
+                  const paypal_query = "INSERT INTO paypal VALUES(0,?,null,null)"
+                  conexionBD.query(paypal_query, [restauranteData], (err, results) => {
+                    if (err) {
+                        console.log(err);
+                        response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: CREAR PAYPAL');
+                    } else {
+                      console.log(err);
+                      response.status(200).send('PAYPAL CREADO CORRECTAMENTE');
+                    }
+                  });
                 }
               });
           }
