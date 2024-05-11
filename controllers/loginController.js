@@ -8,7 +8,7 @@ const crypto = require('crypto');
 exports.buscarLogeo = async (request, response) => {
     try {
       const { correo, contrasenia } = request.body;
-      const query = 'SELECT * FROM dueños WHERE correo = ? AND contrasenia = ?';
+      const query = 'SELECT s.*,r.nombre restaurante FROM dueños s,restaurantes r WHERE correo = ? AND contrasenia = ? AND s.restaurante_id = r.id';
       const hash = crypto.createHash('sha256');
       hash.update(contrasenia);
       const contraseniaHash = hash.digest('hex');
@@ -32,8 +32,7 @@ exports.buscarLogeo = async (request, response) => {
               });
         } else {
           const clienteData = results[0];
-          const cliente = new Dueño(clienteData.id, clienteData.cedula, clienteData.nombre, clienteData.apellido, clienteData.correo, clienteData.contrasenia, clienteData.telefono, clienteData.direccion, clienteData.rol_id, clienteData.estado);
-          response.json(cliente);
+          response.json(clienteData);
         }
       });
     } catch (error) {
@@ -45,7 +44,7 @@ exports.buscarLogeo = async (request, response) => {
 exports.crearUsuario = async (request, response) => {
     try {
       const { cedula,nombre,apellido,correo, contrasenia,fechaNacimiento,nombreRestaurante } = request.body;
-      const query = 'INSERT INTO restaurantes VALUES(0,?,null,1)';
+      const query = 'INSERT INTO restaurantes VALUES(0,?,null,null,1)';
       conexionBD.query(query, [nombreRestaurante], (err, results) => {
         if (err) {
             console.log(err);
@@ -153,8 +152,8 @@ exports.crearUsuario = async (request, response) => {
 const enviarCorreo= async (destinatario, asunto, mensaje,response) => {
   try {
     //deben crear en su outlook una contrase;a para aplicacion, ahi podran probar
-    const correo_empresa = ''
-    const clave_empresa = ''
+    const correo_empresa = 'silbay4160@uta.edu.ec'
+    const clave_empresa = 'wmxhdmwpxdxjbymv'
     let transporter = nodemailer.createTransport({
       host: "smtp.office365.com",
       port: 587,
