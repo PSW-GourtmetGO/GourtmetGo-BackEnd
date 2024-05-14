@@ -3,9 +3,10 @@ const Plato = require('../models/platos');
 
 exports.crearPlato = async (request, response) => {
     try {
-      const { nombre,precio, descripcion,imagen,categoria_id } = request.body;
-      const query = 'INSERT INTO platos VALUES (0,?,?,?,?,?,1,1)';
-      conexionBD.query(query, [nombre,precio, descripcion,imagen,categoria_id], (err, results) => {
+      const {categoria} = request.params;
+      const { nombre,precio, imagen, ver} = request.body;
+      const query = 'INSERT INTO platos VALUES (0,?,?,?,"false",?,?)';
+      conexionBD.query(query, [nombre,precio, imagen,ver,categoria], (err, results) => {
         if (err) {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: CREAR PLATO');
@@ -19,12 +20,34 @@ exports.crearPlato = async (request, response) => {
     }
   };
 
-exports.obtenerPlatosDueño = async (request, response) => {
+exports.obtenerPlatosDueñoCategoria = async (request, response) => {
     try {
-        const { restaurante_id } = request.query;
-        let query = 'SELECT p.* FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.restaurante_id = s.id AND s.id=? AND p.eliminado = 1 AND c.estado = 1';
+        const { categoria } = request.params;
+        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.id = ? AND p.eliminado = "false" AND c.eliminado = "false"';
 
-        conexionBD.query(query, [restaurante_id], (err, platos) => {
+        conexionBD.query(query, [categoria], (err, platos) => {
+            if (err) {
+                console.log(err);
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCION DE PLATOS');
+                return;
+            }
+            else {
+                console.log(platos);
+                response.json(platos);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCION DE PLATOS');
+    }
+};
+
+exports.obtenerPlatosDueñoTodos = async (request, response) => {
+    try {
+        const { restaurante } = request.params;
+        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.restaurante_id=? AND p.eliminado = "false" AND c.eliminado = "false"';
+
+        conexionBD.query(query, [restaurante], (err, platos) => {
             if (err) {
                 console.log(err);
                 response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCION DE PLATOS');
@@ -117,9 +140,10 @@ exports.eliminarPlato = async (request, response) => {
 
 exports.actualizarPlato = async (request, response) => {
     try {
-      const { plato_id,nombre,precio,descripcion,imagen,categoria_id,estado} = request.body;
-      const query = 'UPDATE platos set nombre=?,precio=?,descripcion=?,imagen=?,categoria_id=?,estado=? WHERE id = ?';
-      conexionBD.query(query, [nombre,precio,descripcion,imagen,categoria_id,estado,plato_id], (err, results) => {
+      const {id} = request.params;
+      const { nombre,precio,imagen,categoria,ver} = request.body;
+      const query = 'UPDATE platos set nombre=?,precio=?,imagen=?,categoria_id=?,ver=? WHERE id = ?';
+      conexionBD.query(query, [nombre,precio,imagen,categoria,ver,id], (err, results) => {
         if (err) {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR PLATO');
@@ -137,3 +161,27 @@ exports.actualizarPlato = async (request, response) => {
     }
   };
   
+  exports.obtenerPlatoBuscado = async (request, response) => {
+    try {
+        const { restaurante,plato } = request.query;
+        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.restaurante_id=? AND p.eliminado = "false" AND c.eliminado = "false" AND p.nombre LIKE ?';
+        const platoParam = `%${plato}%`;
+        conexionBD.query(query, [restaurante,platoParam], (err, platos) => {
+            if (err) {
+                console.log(err);
+                response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCION DE PLATOS');
+                return;
+            }
+            if (platos.length === 0) {
+                response.status(404).send('NO EXISTEN PLATOS');
+            } else {
+                console.log(platos);
+                response.json(platos);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCION DE PLATOS');
+    }
+};
+

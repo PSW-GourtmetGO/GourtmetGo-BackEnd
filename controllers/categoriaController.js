@@ -3,9 +3,10 @@ const Categoria = require('../models/categorias');
 
 exports.crearCategoria = async (request, response) => {
     try {
-      const { nombre,descripcion, restaurante_id} = request.body;
-      const query = 'INSERT INTO categorias VALUES (0,?,?,?,1)';
-      conexionBD.query(query, [nombre,descripcion, restaurante_id], (err, results) => {
+        const { restaurante} = request.params;
+        const { nombre} = request.body;
+        const query = 'INSERT INTO categorias VALUES (0,?,"false","true",?)';
+      conexionBD.query(query, [nombre,restaurante], (err, results) => {
         if (err) {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: CATEGORIA YA CREADA ANTERIORMENTE');
@@ -22,10 +23,10 @@ exports.crearCategoria = async (request, response) => {
 
   exports.obtenerCategorias = async (request, response) => {
     try {
-        const { restaurante_id } = request.query;
-        let query = 'SELECT * FROM categorias WHERE restaurante_id = ? and estado = 1';
+        const { id } = request.params;
+        let query = 'SELECT * FROM categorias WHERE restaurante_id = ? and eliminado = "false"';
 
-        conexionBD.query(query, [restaurante_id], (err, categorias) => {
+        conexionBD.query(query, [id], (err, categorias) => {
             if (err) {
                 console.log(err);
                 response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCIÓN DE CATEGORÍAS');
@@ -70,10 +71,10 @@ exports.obtenerCategoria = async (request, response) => {
 
 exports.eliminarCategoria = async (request, response) => {
     try {
-        const { categoria_id } = request.query; 
-        let query = 'UPDATE categorias SET estado = 0 WHERE id = ?'; 
+        const { id } = request.params; 
+        let query = 'UPDATE categorias SET eliminado = "true" WHERE id = ?'; 
 
-        conexionBD.query(query, [categoria_id], (err, resultado) => {
+        conexionBD.query(query, [id], (err, resultado) => {
             if (err) {
                 console.log(err);
                 response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ELIMINACIÓN DE CATEGORÍA');
@@ -91,11 +92,35 @@ exports.eliminarCategoria = async (request, response) => {
     }
 };
 
-exports.actualizarCategoria = async (request, response) => {
+exports.actualizarEstadoCategoria = async (request, response) => {
     try {
-      const { nombre,descripcion, categoria_id} = request.body;
-      const query = 'UPDATE categorias set nombre=?,descripcion=? WHERE id = ?';
-      conexionBD.query(query, [nombre,descripcion, categoria_id], (err, results) => {
+        const { id } = request.params;
+        const { ver } = request.body;
+        const query = 'UPDATE categorias set ver = ? WHERE id = ?';
+      conexionBD.query(query, [ver,id], (err, results) => {
+        if (err) {
+            console.log(err);
+            response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZACIÓN DE CATEGORÍA');
+            return;
+        }
+        if (results.affectedRows === 0) {
+            response.status(404).send('NO SE ENCONTRÓ LA CATEGORÍA A ACTUALIZAR');
+        } else {
+            response.status(200).send('CATEGORÍA ACTUALIZADA CORRECTAMENTE');
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR CATEGORIA');
+    }
+  };
+
+  exports.actualizarCategoria = async (request, response) => {
+    try {
+        const { id } = request.params;
+        const { nombre } = request.body;
+        const query = 'UPDATE categorias set nombre = ? WHERE id = ?';
+      conexionBD.query(query, [nombre,id], (err, results) => {
         if (err) {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZACIÓN DE CATEGORÍA');
