@@ -31,25 +31,35 @@ exports.activarPlan = async (request, response) => {
 
   exports.actualizarPaypal = async (request, response) => {
     try {
-      const { tienda,token,restaurante_id} = request.body;
+        const{restaurante} = request.params
+      const { empresa,token} = request.body;
       const query = 'UPDATE paypal SET nombre_tienda = ?, token = ? WHERE restaurante_id = ?';
-      conexionBD.query(query, [tienda,token,restaurante_id], (err, results) => {
+      conexionBD.query(query, [empresa,token,restaurante], (err, results) => {
         if (err) {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR PAYPAL');
         }
         else {
-            const id_plan_activado = results.insertId;
-            const updateQuery = 'UPDATE dueños SET planDueño_id = ? WHERE id= ?';
-            conexionBD.query(updateQuery, [id_plan_activado,id_propietario], (err, results) => {
-              if (err) {
-                  console.log(err);
-                  response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR PAYPAL');
-              }
-              else {
-                  response.status(200).send('PAYPAL ACTUALIZADO');
-              }
-            });
+            response.status(200).send('PAYPAL ACTUALIZADO');
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR PAYPAL');
+    }
+  };
+
+  exports.obtenerPaypal = async (request, response) => {
+    try {
+      const{restaurante} = request.params
+      const query = 'SELECT * FROM paypal WHERE restaurante_id = ?';
+      conexionBD.query(query, [restaurante], (err, results) => {
+        if (err) {
+            console.log(err);
+            response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR PAYPAL');
+        }
+        else {
+            response.json(results);
         }
       });
     } catch (error) {
