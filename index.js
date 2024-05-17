@@ -24,6 +24,7 @@ app.use('/api/Web/plato',require('./routes/platoRoute'))
 app.use('/api/Web/empleado',require('./routes/empleadoRoute'))
 app.use('/api/Web/restaurante',require('./routes/restauranteRoute'))
 app.use('/api/Web/propietario',require('./routes/dueñoRoute'))
+app.use('/api/Web/pedidos',require('./routes/pedidosController'))
 
 app.listen(4500 , ()=> {
     console.log("El servidor funcionando")
