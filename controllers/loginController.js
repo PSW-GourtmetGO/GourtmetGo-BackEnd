@@ -17,7 +17,7 @@ exports.buscarLogeo = async (request, response) => {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: BUSCAR CLIENTE');
         } else if (results.length === 0) {
-            const query = 'SELECT * FROM empleados WHERE correo = ? AND contrasenia = ?';
+            const query = 'SELECT e.rol_id p_rol, e.restaurante_id r_id, r.nombre r_nombre, e.id p_id, e.id plan, TO_BASE64(r.imagen) AS r_imagen_base64  FROM empleados e,restaurantes r WHERE e.correo = ? AND e.contrasenia = ? AND r.id = e.restaurante_id';
             conexionBD.query(query, [correo, contraseniaHash], (err, results) => {
                 if (err) {
                     console.log(err);
@@ -25,9 +25,9 @@ exports.buscarLogeo = async (request, response) => {
                 } else if (results.length === 0) {
                     response.status(404).send('ERROR DURANTE EL PROCEDIMIENTO: EL EMPLEADO O DUEÑO NO SE ENCUENTRA REGISTRADO');                    
                 } else {
-                  const clienteData = results[0];
-                  const cliente = new Empleado(clienteData.id, clienteData.cedula, clienteData.nombre, clienteData.apellido, clienteData.correo, clienteData.contrasenia, clienteData.telefono, clienteData.direccion, clienteData.rol_id, clienteData.estado);
-                  response.json(cliente);
+                  console.log("algo");
+                  console.log(results[0])
+                  response.json(results[0]);
                 }
               });
         } else {

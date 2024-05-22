@@ -171,10 +171,7 @@ exports.actualizarPlato = async (request, response) => {
                 console.log(err);
                 response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENCION DE PLATOS');
                 return;
-            }
-            if (platos.length === 0) {
-                response.status(404).send('NO EXISTEN PLATOS');
-            } else {
+            }else {
                 console.log(platos);
                 response.json(platos);
             }
