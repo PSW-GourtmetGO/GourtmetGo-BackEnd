@@ -23,7 +23,7 @@ exports.crearPlato = async (request, response) => {
 exports.obtenerPlatosDueñoCategoria = async (request, response) => {
     try {
         const { categoria } = request.params;
-        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.id = ? AND p.eliminado = "false" AND c.eliminado = "false"';
+        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE c.restaurante_id = s.id AND p.categoria_id = c.id AND c.id = ? AND p.eliminado = "false" AND c.eliminado = "false"';
 
         conexionBD.query(query, [categoria], (err, platos) => {
             if (err) {
@@ -45,7 +45,7 @@ exports.obtenerPlatosDueñoCategoria = async (request, response) => {
 exports.obtenerPlatosDueñoTodos = async (request, response) => {
     try {
         const { restaurante } = request.params;
-        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.restaurante_id=? AND p.eliminado = "false" AND c.eliminado = "false"';
+        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE c.restaurante_id = s.id AND p.categoria_id = c.id AND c.restaurante_id=? AND p.eliminado = "false" AND c.eliminado = "false"';
 
         conexionBD.query(query, [restaurante], (err, platos) => {
             if (err) {
