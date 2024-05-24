@@ -27,7 +27,7 @@ app.use('/api/Web/propietario',require('./routes/dueñoRoute'))
 app.use('/api/Web/pedidos',require('./routes/pedidosController'))
 
 app.use('/api/Movil/login',require('./routes/loginMovilRoute'))
-
+app.use('/api/Movil/general',require('./routes/generalMovilRoutes'))
 
 app.listen(4500 , ()=> {
     console.log("El servidor funcionando")

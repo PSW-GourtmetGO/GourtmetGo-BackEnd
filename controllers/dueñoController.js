@@ -2,7 +2,10 @@ const conexionBD = require('../config/db')
 
 exports.activarPlan = async (request, response) => {
     try {
-      const { plan_id , fecha_inicio ,fecha_fin,id_propietario} = request.body;
+      const fecha_inicio = new Date();
+      const fecha_fin = new Date(fecha_inicio);
+      fecha_fin.setMonth(fecha_fin.getMonth() + 1);
+      const { plan_id ,id_propietario} = request.body;
       const query = 'INSERT INTO plandueño VALUES(0,?,?,?,1)';
       conexionBD.query(query, [plan_id , fecha_inicio ,fecha_fin], (err, results) => {
         if (err) {
