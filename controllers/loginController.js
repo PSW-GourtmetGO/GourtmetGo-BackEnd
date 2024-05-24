@@ -43,9 +43,9 @@ exports.buscarLogeo = async (request, response) => {
 
 exports.crearUsuario = async (request, response) => {
     try {
-      const { cedula,nombre,apellido,correo, contrasenia,fechaNacimiento,nombreRestaurante } = request.body;
-      const query = 'INSERT INTO restaurantes VALUES(0,?,null,null,1)';
-      conexionBD.query(query, [nombreRestaurante], (err, results) => {
+      const { cedula,nombre,apellido,correo, contrasenia,fechaNacimiento,nombreRestaurante,direccion } = request.body;
+      const query = 'INSERT INTO restaurantes VALUES(0,?,?,null,1)';
+      conexionBD.query(query, [nombreRestaurante,direccion], (err, results) => {
         if (err) {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: CREAR RESTAURANTE');
