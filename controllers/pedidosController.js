@@ -9,10 +9,7 @@ exports.obtenerPedidos = async (request, response) => {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: OBTENER PEDIDOS');
             return;
-        }
-        if (pedidos.length === 0) {
-            response.status(404).send('NO EXISTEN PEDIDOS');
-        } else {
+        }else {
             response.json(pedidos);
         }
       });

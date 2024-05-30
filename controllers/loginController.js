@@ -8,7 +8,7 @@ const crypto = require('crypto');
 exports.buscarLogeo = async (request, response) => {
     try {
       const { correo, contrasenia } = request.body;
-      const query = 'SELECT s.rol_id p_rol, s.restaurante_id r_id, r.nombre r_nombre, s.id p_id, s.planDueño_id plan, r.imagen r_imagen_base64 FROM dueños s, restaurantes r WHERE correo = ? AND contrasenia = ? AND s.restaurante_id = r.id';
+      const query = 'SELECT s.rol_id p_rol, s.restaurante_id r_id, r.nombre r_nombre, s.id p_id, s.planDueño_id plan, r.imagen r_imagen_base64, s.nombre nombreP, s.apellido apellidoP FROM dueños s, restaurantes r WHERE correo = ? AND contrasenia = ? AND s.restaurante_id = r.id';
       const hash = crypto.createHash('sha256');
       hash.update(contrasenia);
       const contraseniaHash = hash.digest('hex');
@@ -17,7 +17,7 @@ exports.buscarLogeo = async (request, response) => {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: BUSCAR CLIENTE');
         } else if (results.length === 0) {
-            const query = 'SELECT e.rol_id p_rol, e.restaurante_id r_id, r.nombre r_nombre, e.id p_id, e.id plan, TO_BASE64(r.imagen) AS r_imagen_base64  FROM empleados e,restaurantes r WHERE e.correo = ? AND e.contrasenia = ? AND r.id = e.restaurante_id';
+            const query = 'SELECT e.rol_id p_rol, e.restaurante_id r_id, r.nombre r_nombre, e.id p_id, e.id plan, TO_BASE64(r.imagen) AS r_imagen_base64,e.nombre nombreP,e.apellido apellidoP  FROM empleados e,restaurantes r WHERE e.correo = ? AND e.contrasenia = ? AND r.id = e.restaurante_id';
             conexionBD.query(query, [correo, contraseniaHash], (err, results) => {
                 if (err) {
                     console.log(err);
