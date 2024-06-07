@@ -65,6 +65,52 @@ exports.obtenerPedidoCarrito = async (request, response) => {
     }
 };
 
+exports.obtenerPedidosHistorial = async (request, response) => {
+    try {
+        const { cliente } = request.query;
+
+        const queryStr = 'SELECT p.*,r.nombre nombreRestaurante, r.imagen restauranteImagen FROM pedidos p, restaurantes r WHERE p.cliente_id=? AND p.estado != "Carrito" AND r.id=p.restaurante_id';
+        const pedidos = await query(queryStr, [cliente]);
+
+        for (const pedido of pedidos) {
+            const detalles = await obtenerDetalleCarrito(pedido.id);
+            pedido.detalles = detalles;
+        }
+
+        response.status(200).json({ success: true, message: 'PROCESO EXITOSO HISTORIAL', result: pedidos });
+    } catch (error) {
+        console.log(error);
+        response.status(500).json({ success: false, message: 'PROCESO FALLIDO HISTORIAL' });
+    }
+};
+
+exports.obtenerPedidoEspecifico = async (request, response) => {
+    try {
+        const { id } = request.query;
+
+        const queryStr = 'SELECT p.*,r.nombre nombreRestaurante, r.imagen restauranteImagen FROM pedidos p, restaurantes r WHERE p.id=? AND r.id=p.restaurante_id';
+        const pedidos = await query(queryStr, [id]);
+
+        response.status(200).json({ success: true, message: 'PROCESO EXITOSO HISTORIAL', result: pedidos });
+    } catch (error) {
+        console.log(error);
+        response.status(500).json({ success: false, message: 'PROCESO FALLIDO HISTORIAL' });
+    }
+};
+
+exports.obtenerDatosPago = async (request, response) => {
+    try {
+        const { restaurante } = request.query;
+        const queryStr = 'SELECT * FROM paypal WHERE restaurante_id=?';
+        const datos = await query(queryStr, [restaurante]);
+
+        response.status(200).json({ success: true, message: 'PROCESO EXITOSO PEDIDOS', result: datos });
+    } catch (error) {
+        console.log(error);
+        response.status(500).json({ success: false, message: 'PROCESO FALLIDO PEDIDOS' });
+    }
+};
+
 exports.agregarPlatoCarrito = async (request, response) => {
     try {
         const { restaurante, plato, cliente } = request.body;
