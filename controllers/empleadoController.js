@@ -53,7 +53,7 @@ exports.obtenerEmpleado = async (request, response) => {
   try {
       const { cedula,restaurante } = request.query;
 
-      let query = 'SELECT * FROM empleados WHERE restaurante_id = ? AND cedula LIKE ?';
+      let query = 'SELECT * FROM empleados WHERE restaurante_id = ? AND nombre LIKE ?';
       const cedulaParam = `%${cedula}%`;
       conexionBD.query(query, [restaurante,cedulaParam], (err, empleado) => {
           if (err) {
