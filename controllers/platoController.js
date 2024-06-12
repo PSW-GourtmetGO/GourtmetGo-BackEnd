@@ -164,7 +164,7 @@ exports.actualizarPlato = async (request, response) => {
   exports.obtenerPlatoBuscado = async (request, response) => {
     try {
         const { restaurante,plato } = request.query;
-        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE p.categoria_id = c.id AND c.restaurante_id=? AND p.eliminado = "false" AND c.eliminado = "false" AND p.nombre LIKE ?';
+        let query = 'SELECT p.*,c.nombre categoria_nombre,c.id categoria_id FROM platos p,categorias c,restaurantes s WHERE c.restaurante_id=s.id AND p.categoria_id = c.id AND c.restaurante_id=? AND p.eliminado = "false" AND c.eliminado = "false" AND p.nombre LIKE ?';
         const platoParam = `%${plato}%`;
         conexionBD.query(query, [restaurante,platoParam], (err, platos) => {
             if (err) {
