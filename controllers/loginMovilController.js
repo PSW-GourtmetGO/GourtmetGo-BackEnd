@@ -32,7 +32,7 @@ exports.buscarLogeo = async (request, response) => {
       const hash = crypto.createHash('sha256');
       hash.update(contrasenia);
       const contraseniaHash = hash.digest('hex');
-      const query = 'INSERT INTO clientes VALUES(0,?,?,?,?,aes_encrypt("?","cli073"),?,?,?,1)';
+      const query = 'INSERT INTO clientes VALUES(0,?,?,?,?,aes_encrypt(?,"cli073"),?,?,?,1)';
       conexionBD.query(query, [cedula, nombre, apellido, fecha_nacimiento, correo, contraseniaHash, telefono, direccion], (err, results) => {
         if (err) {
           console.log(err);
