@@ -89,13 +89,13 @@ exports.crearUsuario = async (request, response) => {
     try {
         const { destinatario } = request.body;
         const asunto = 'Recuperacion Clave';
-        const query = 'SELECT id FROM dueños WHERE correo = ?';
+        const query = 'SELECT id FROM dueños WHERE aes_decrypt(correo,"due943") = ?';
         conexionBD.query(query, [destinatario], (err, results) => {
             if (err) {
                 console.log(err);
                 response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: BUSCAR DATOS');
             } else if (results.length === 0) {
-              const query = 'SELECT id FROM empleados WHERE correo = ?';
+              const query = 'SELECT id FROM empleados WHERE aes_decrypt(e.correo,"emp271") = ?';
               conexionBD.query(query, [destinatario], (err, results) => {
               if (err) {
                 console.log(err);
