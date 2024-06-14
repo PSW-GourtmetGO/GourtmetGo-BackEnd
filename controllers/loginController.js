@@ -17,7 +17,7 @@ exports.buscarLogeo = async (request, response) => {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: BUSCAR CLIENTE');
         } else if (results.length === 0) {
-            const query = 'SELECT e.rol_id p_rol, e.restaurante_id r_id, r.nombre r_nombre, e.id p_id, e.id plan, TO_BASE64(r.imagen) AS r_imagen_base64,e.nombre nombreP,e.apellido apellidoP  FROM empleados e,restaurantes r WHERE e.correo = ? AND e.contrasenia = ? AND r.id = e.restaurante_id';
+            const query = 'SELECT e.rol_id p_rol, e.restaurante_id r_id, r.nombre r_nombre, e.id p_id, e.id plan, TO_BASE64(r.imagen) AS r_imagen_base64,e.nombre nombreP,e.apellido apellidoP  FROM empleados e,restaurantes r WHERE aes_decrypt(e.correo,"emp271") = ? AND e.contrasenia = ? AND r.id = e.restaurante_id';
             conexionBD.query(query, [correo, contraseniaHash], (err, results) => {
                 if (err) {
                     console.log(err);
