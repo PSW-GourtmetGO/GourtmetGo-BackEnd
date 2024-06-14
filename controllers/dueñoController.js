@@ -36,7 +36,7 @@ exports.activarPlan = async (request, response) => {
     try {
         const{restaurante} = request.params
       const { empresa,token} = request.body;
-      const query = 'UPDATE paypal SET nombre_tienda = ?, token = ? WHERE restaurante_id = ?';
+      const query = 'UPDATE paypal SET nombre_tienda = aes_encrypt(?,"pay92838"), token = aes_encrypt(?,"pay92838") WHERE restaurante_id = ?';
       conexionBD.query(query, [empresa,token,restaurante], (err, results) => {
         if (err) {
             console.log(err);
@@ -55,7 +55,7 @@ exports.activarPlan = async (request, response) => {
   exports.obtenerPaypal = async (request, response) => {
     try {
       const{restaurante} = request.params
-      const query = 'SELECT * FROM paypal WHERE restaurante_id = ?';
+      const query = 'SELECT id,restaurante_id,cast(aes_decrypt(nombre_tienda,"pay92838") as char) AS nombre_tienda,cast(aes_decrypt(token,"pay92838") as char) AS token FROM paypal WHERE restaurante_id = ?;';
       conexionBD.query(query, [restaurante], (err, results) => {
         if (err) {
             console.log(err);
