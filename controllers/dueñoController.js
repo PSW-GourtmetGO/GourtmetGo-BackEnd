@@ -74,7 +74,7 @@ exports.activarPlan = async (request, response) => {
   exports.obtenerInformacion = async (request, response) => {
     try {
         const { id } = request.params;
-        let query = 'SELECT d.cedula cedula_p, d.nombre nombre_p,d.apellido apellido_p,d.fecha_nacimiento fecha_nacimiento_p,d.correo correo_p, r.direccion direccion_r, r.nombre nombre_r,r.imagen imagen_r FROM dueños d, restaurantes r WHERE d.id = ? AND d.restaurante_id = r.id';
+        let query = 'SELECT d.cedula cedula_p, d.nombre nombre_p,d.apellido apellido_p,d.fecha_nacimiento fecha_nacimiento_p,cast(aes_decrypt(d.correo,"due943") as char) AS correo_p, r.direccion direccion_r, r.nombre nombre_r,r.imagen imagen_r FROM dueños d, restaurantes r WHERE d.id = ? AND d.restaurante_id = r.id';
   
         conexionBD.query(query, [id], (err, informacion) => {
             if (err) {
@@ -99,7 +99,7 @@ exports.activarPlan = async (request, response) => {
         const { cedula,nombre,apellido,fechaNacimiento,correo,direccion,NombreRestaurante,imagen } = request.body;
         const { idD } = request.params
         console.log(nombre)
-        let query = 'UPDATE dueños AS d JOIN restaurantes AS r ON d.restaurante_id = r.id SET d.cedula = ?, d.nombre = ?, d.apellido = ?, d.fecha_nacimiento = ?, d.correo = ?, r.direccion = ?, r.nombre = ?, r.imagen = ? WHERE d.id = ?';
+        let query = 'UPDATE dueños AS d JOIN restaurantes AS r ON d.restaurante_id = r.id SET d.cedula = ?, d.nombre = ?, d.apellido = ?, d.fecha_nacimiento = ?, d.correo = aes_encrypt(?,"due943"), r.direccion = ?, r.nombre = ?, r.imagen = ? WHERE d.id = ?';
   
         conexionBD.query(query, [cedula,nombre,apellido,fechaNacimiento,correo,direccion,NombreRestaurante,imagen,idD], (err, informacion) => {
             if (err) {
