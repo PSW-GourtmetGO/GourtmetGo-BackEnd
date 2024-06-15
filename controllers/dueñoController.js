@@ -36,7 +36,7 @@ exports.activarPlan = async (request, response) => {
     try {
         const{restaurante} = request.params
       const { empresa,secret} = request.body;
-      const query = 'UPDATE paypal SET nombre_tienda = ?, secret = ? WHERE restaurante_id = ?';
+      const query = 'UPDATE paypal SET nombre_tienda = aes_encrypt(?,"pay92838"), secret = aes_encrypt(?,"pay92838") WHERE restaurante_id = ?';
       conexionBD.query(query, [empresa,secret,restaurante], (err, results) => {
         if (err) {
             console.log(err);
@@ -55,7 +55,7 @@ exports.activarPlan = async (request, response) => {
   exports.obtenerPaypal = async (request, response) => {
     try {
       const{restaurante} = request.params
-      const query = 'SELECT * FROM paypal WHERE restaurante_id = ?';
+      const query = 'SELECT id,restaurante_id,cast(aes_decrypt(nombre_tienda,"pay92838") as char) AS nombre_tienda,cast(aes_decrypt(secret,"pay92838") as char) AS secret FROM paypal WHERE restaurante_id = ?;';
       conexionBD.query(query, [restaurante], (err, results) => {
         if (err) {
             console.log(err);
@@ -74,7 +74,7 @@ exports.activarPlan = async (request, response) => {
   exports.obtenerInformacion = async (request, response) => {
     try {
         const { id } = request.params;
-        let query = 'SELECT d.cedula cedula_p, d.nombre nombre_p,d.apellido apellido_p,d.fecha_nacimiento fecha_nacimiento_p,d.correo correo_p, r.direccion direccion_r, r.nombre nombre_r,r.imagen imagen_r FROM dueños d, restaurantes r WHERE d.id = ? AND d.restaurante_id = r.id';
+        let query = 'SELECT d.cedula cedula_p, d.nombre nombre_p,d.apellido apellido_p,d.fecha_nacimiento fecha_nacimiento_p,cast(aes_decrypt(d.correo,"due943") as char) AS correo_p, r.direccion direccion_r, r.nombre nombre_r,r.imagen imagen_r FROM dueños d, restaurantes r WHERE d.id = ? AND d.restaurante_id = r.id';
   
         conexionBD.query(query, [id], (err, informacion) => {
             if (err) {
@@ -99,7 +99,7 @@ exports.activarPlan = async (request, response) => {
         const { cedula,nombre,apellido,fechaNacimiento,correo,direccion,NombreRestaurante,imagen } = request.body;
         const { idD } = request.params
         console.log(nombre)
-        let query = 'UPDATE dueños AS d JOIN restaurantes AS r ON d.restaurante_id = r.id SET d.cedula = ?, d.nombre = ?, d.apellido = ?, d.fecha_nacimiento = ?, d.correo = ?, r.direccion = ?, r.nombre = ?, r.imagen = ? WHERE d.id = ?';
+        let query = 'UPDATE dueños AS d JOIN restaurantes AS r ON d.restaurante_id = r.id SET d.cedula = ?, d.nombre = ?, d.apellido = ?, d.fecha_nacimiento = ?, d.correo = aes_encrypt(?,"due943"), r.direccion = ?, r.nombre = ?, r.imagen = ? WHERE d.id = ?';
   
         conexionBD.query(query, [cedula,nombre,apellido,fechaNacimiento,correo,direccion,NombreRestaurante,imagen,idD], (err, informacion) => {
             if (err) {

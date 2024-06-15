@@ -8,7 +8,7 @@ const crypto = require('crypto');
 exports.buscarLogeo = async (request, response) => {
     try {
       const { correo, contrasenia } = request.body;
-      const query = 'SELECT s.rol_id p_rol, s.restaurante_id r_id, r.nombre r_nombre, s.id p_id, s.planDueño_id plan, r.imagen r_imagen_base64, s.nombre nombreP, s.apellido apellidoP FROM dueños s, restaurantes r WHERE correo = ? AND contrasenia = ? AND s.restaurante_id = r.id';
+      const query = 'SELECT s.rol_id p_rol, s.restaurante_id r_id, r.nombre r_nombre, s.id p_id, s.planDueño_id plan, r.imagen r_imagen_base64, s.nombre nombreP, s.apellido apellidoP FROM dueños s, restaurantes r WHERE aes_decrypt(correo,"due943") = ? AND contrasenia = ? AND s.restaurante_id = r.id';
       const hash = crypto.createHash('sha256');
       hash.update(contrasenia);
       const contraseniaHash = hash.digest('hex');
@@ -17,7 +17,7 @@ exports.buscarLogeo = async (request, response) => {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: BUSCAR CLIENTE');
         } else if (results.length === 0) {
-            const query = 'SELECT e.rol_id p_rol, e.restaurante_id r_id, r.nombre r_nombre, e.id p_id, e.id plan, TO_BASE64(r.imagen) AS r_imagen_base64,e.nombre nombreP,e.apellido apellidoP  FROM empleados e,restaurantes r WHERE e.correo = ? AND e.contrasenia = ? AND r.id = e.restaurante_id';
+            const query = 'SELECT e.rol_id p_rol, e.restaurante_id r_id, r.nombre r_nombre, e.id p_id, e.id plan, TO_BASE64(r.imagen) AS r_imagen_base64,e.nombre nombreP,e.apellido apellidoP  FROM empleados e,restaurantes r WHERE aes_decrypt(e.correo,"emp271") = ? AND e.contrasenia = ? AND r.id = e.restaurante_id';
             conexionBD.query(query, [correo, contraseniaHash], (err, results) => {
                 if (err) {
                     console.log(err);
@@ -51,7 +51,7 @@ exports.crearUsuario = async (request, response) => {
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: CREAR RESTAURANTE');
         } else {
             const restauranteData = results.insertId;
-            const query = 'INSERT INTO dueños VALUES(0,?,?,?,?,?,?,null,?,1,1)';
+            const query = 'INSERT INTO dueños VALUES(0,?,?,?,aes_encrypt(?,"due943"),?,?,null,?,1,1)';
             const hash = crypto.createHash('sha256');
             hash.update(contrasenia);
             const contraseniaHash = hash.digest('hex');
@@ -89,13 +89,13 @@ exports.crearUsuario = async (request, response) => {
     try {
         const { destinatario } = request.body;
         const asunto = 'Recuperacion Clave';
-        const query = 'SELECT id FROM dueños WHERE correo = ?';
+        const query = 'SELECT id FROM dueños WHERE aes_decrypt(correo,"due943") = ?';
         conexionBD.query(query, [destinatario], (err, results) => {
             if (err) {
                 console.log(err);
                 response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: BUSCAR DATOS');
             } else if (results.length === 0) {
-              const query = 'SELECT id FROM empleados WHERE correo = ?';
+              const query = 'SELECT id FROM empleados WHERE aes_decrypt(e.correo,"emp271") = ?';
               conexionBD.query(query, [destinatario], (err, results) => {
               if (err) {
                 console.log(err);

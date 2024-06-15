@@ -6,7 +6,7 @@ const crypto = require('crypto');
 exports.buscarLogeo = async (request, response) => {
     try {
       const { correo, contrasenia } = request.body;
-      const query = 'SELECT * FROM clientes WHERE correo=? AND contrasenia = ?';
+      const query = 'SELECT * FROM clientes WHERE aes_decrypt(correo,"cli073")=? AND contrasenia = ?';
       const hash = crypto.createHash('sha256');
       hash.update(contrasenia);
       const contraseniaHash = hash.digest('hex');
@@ -32,7 +32,7 @@ exports.buscarLogeo = async (request, response) => {
       const hash = crypto.createHash('sha256');
       hash.update(contrasenia);
       const contraseniaHash = hash.digest('hex');
-      const query = 'INSERT INTO clientes VALUES(0,?,?,?,?,?,?,?,?,1)';
+      const query = 'INSERT INTO clientes VALUES(0,?,?,?,?,aes_encrypt(?,"cli073"),?,?,?,1)';
       conexionBD.query(query, [cedula, nombre, apellido, fecha_nacimiento, correo, contraseniaHash, telefono, direccion], (err, results) => {
         if (err) {
           console.log(err);
@@ -51,7 +51,7 @@ exports.buscarLogeo = async (request, response) => {
     try {
         const { destinatario } = request.body;
         const asunto = 'Recuperacion Clave';
-        const query = 'SELECT id FROM clientes WHERE correo = ?';
+        const query = 'SELECT id FROM clientes WHERE aes_decrypt(correo,"cli073") = ?';
         conexionBD.query(query, [destinatario], (err, results) => {
             if (err) {
               response.status(500).json({ success: false, message: 'ERROR DURANTE EL PROCEDIMIENTO: ENVIAR CONTRASEÑA' });
