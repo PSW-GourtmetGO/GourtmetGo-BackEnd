@@ -55,7 +55,7 @@ exports.activarPlan = async (request, response) => {
   exports.obtenerPaypal = async (request, response) => {
     try {
       const{restaurante} = request.params
-      const query = 'SELECT id,restaurante_id,cast(aes_decrypt(nombre_tienda,"pay92838") as char) AS nombre_tienda,cast(aes_decrypt(token,"pay92838") as char) AS token FROM paypal WHERE restaurante_id = ?;';
+      const query = 'SELECT id,restaurante_id,cast(aes_decrypt(nombre_tienda,"pay92838") as char) AS nombre_tienda,cast(aes_decrypt(secret,"pay92838") as char) AS secret FROM paypal WHERE restaurante_id = ?;';
       conexionBD.query(query, [restaurante], (err, results) => {
         if (err) {
             console.log(err);

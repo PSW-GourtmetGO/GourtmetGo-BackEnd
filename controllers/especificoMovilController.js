@@ -101,7 +101,7 @@ exports.obtenerPedidoEspecifico = async (request, response) => {
 exports.obtenerDatosPago = async (request, response) => {
     try {
         const { restaurante } = request.query;
-        const queryStr = 'SELECT * FROM paypal WHERE restaurante_id=?';
+        const queryStr = 'SELECT id,restaurante_id,cast(aes_decrypt(nombre_tienda,"pay92838") as char) AS nombre_tienda,cast(aes_decrypt(secret,"pay92838") as char) AS secret FROM paypal WHERE restaurante_id=?';
         const datos = await query(queryStr, [restaurante]);
 
         if (datos.length === 0) {
