@@ -35,9 +35,9 @@ exports.activarPlan = async (request, response) => {
   exports.actualizarPaypal = async (request, response) => {
     try {
         const{restaurante} = request.params
-      const { empresa,token} = request.body;
-      const query = 'UPDATE paypal SET nombre_tienda = ?, token = ? WHERE restaurante_id = ?';
-      conexionBD.query(query, [empresa,token,restaurante], (err, results) => {
+      const { empresa,secret} = request.body;
+      const query = 'UPDATE paypal SET nombre_tienda = ?, secret = ? WHERE restaurante_id = ?';
+      conexionBD.query(query, [empresa,secret,restaurante], (err, results) => {
         if (err) {
             console.log(err);
             response.status(500).send('ERROR DURANTE EL PROCEDIMIENTO: ACTUALIZAR PAYPAL');

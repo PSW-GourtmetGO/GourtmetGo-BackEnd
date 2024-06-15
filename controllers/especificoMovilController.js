@@ -88,7 +88,7 @@ exports.obtenerPedidoEspecifico = async (request, response) => {
     try {
         const { id } = request.query;
 
-        const queryStr = 'SELECT p.*,r.nombre nombreRestaurante, r.imagen restauranteImagen FROM pedidos p, restaurantes r WHERE p.id=? AND r.id=p.restaurante_id';
+        const queryStr = 'SELECT p.*,r.nombre nombreRestaurante, r.imagen restauranteImagen, r.id restauranteId FROM pedidos p, restaurantes r WHERE p.id=? AND r.id=p.restaurante_id';
         const pedidos = await query(queryStr, [id]);
 
         response.status(200).json({ success: true, message: 'PROCESO EXITOSO HISTORIAL', result: pedidos });
@@ -103,6 +103,10 @@ exports.obtenerDatosPago = async (request, response) => {
         const { restaurante } = request.query;
         const queryStr = 'SELECT * FROM paypal WHERE restaurante_id=?';
         const datos = await query(queryStr, [restaurante]);
+
+        if (datos.length === 0) {
+            return response.status(404).json({ success: false, message: 'No se encontraron datos de PayPal para el restaurante especificado' });
+        }
 
         response.status(200).json({ success: true, message: 'PROCESO EXITOSO PEDIDOS', result: datos });
     } catch (error) {
