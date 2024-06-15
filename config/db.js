@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
-require('dotenv').config({path:'variables.env'});
+const { promisify } = require('util');
+require('dotenv').config({ path: 'variables.env' });
 
 const dbConfig = {
   host: process.env.DB_HOST,
@@ -19,4 +20,10 @@ connection.connect((err) => {
   console.log('Connected to MySQL database');
 });
 
-module.exports = connection;
+// Promisify the query function to use async/await
+const query = promisify(connection.query).bind(connection);
+
+module.exports = {
+  connection,
+  query
+};
