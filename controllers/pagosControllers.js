@@ -11,7 +11,7 @@ exports.createOrder = async (req, res) => {
         const { restaurante, precio } = req.body;
         console.log(restaurante)
 
-        const queryStr = 'SELECT * FROM paypal WHERE restaurante_id = ?';
+        const queryStr = 'SELECT id,restaurante_id,cast(aes_decrypt(nombre_tienda,"pay92838") as char) AS nombre_tienda,cast(aes_decrypt(secret,"pay92838") as char) AS secret FROM paypal WHERE restaurante_id = ?;';
         const datosPaypal = await query(queryStr, [restaurante]);
 
         if (datosPaypal.length === 0) {
@@ -87,7 +87,7 @@ exports.captureOrder = async (req, res) => {
         const queryPedido = 'UPDATE pedidos SET estado = "Pendiente" WHERE id=?';
         const pedidos = await query(queryPedido, [id]);
 
-        const queryStr = 'SELECT * FROM paypal WHERE restaurante_id = ?';
+        const queryStr = 'SELECT id,restaurante_id,cast(aes_decrypt(nombre_tienda,"pay92838") as char) AS nombre_tienda,cast(aes_decrypt(secret,"pay92838") as char) AS secret FROM paypal WHERE restaurante_id = ?;';
         const datosPaypal = await query(queryStr, [restaurante]);
 
         if (datosPaypal.length === 0) {

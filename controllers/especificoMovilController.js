@@ -69,7 +69,7 @@ exports.obtenerPedidosHistorial = async (request, response) => {
     try {
         const { cliente } = request.query;
 
-        const queryStr = 'SELECT p.*,r.nombre nombreRestaurante, r.imagen restauranteImagen FROM pedidos p, restaurantes r WHERE p.cliente_id=? AND p.estado != "Carrito" AND r.id=p.restaurante_id';
+        const queryStr = 'SELECT p.*,r.nombre nombreRestaurante, r.imagen restauranteImagen FROM pedidos p, restaurantes r WHERE p.cliente_id=? AND p.estado != "Carrito" AND r.id=p.restaurante_id ORDER BY p.id DESC';
         const pedidos = await query(queryStr, [cliente]);
 
         for (const pedido of pedidos) {

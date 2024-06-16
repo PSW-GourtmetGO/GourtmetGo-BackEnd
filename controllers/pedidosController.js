@@ -3,7 +3,7 @@ const conexionBD = require('../config/db')
 exports.obtenerPedidos = async (request, response) => {
     try {
       const { restaurante } = request.params;
-      const query = "SELECT p.id pID,p.codigo pCODIGO,p.precio_total pTOTAL, p.estado pESTADO, CONCAT(c.nombre, ' ', c.apellido) cCLIENTE FROM pedidos p,clientes c WHERE p.restaurante_id = ? AND NOT p.estado = 'Completo' AND c.id =p.cliente_id;"
+      const query = "SELECT p.id pID,p.codigo pCODIGO,p.precio_total pTOTAL, p.estado pESTADO, CONCAT(c.nombre, ' ', c.apellido) cCLIENTE FROM pedidos p,clientes c WHERE p.restaurante_id = ? AND NOT p.estado = 'Completo' AND c.id =p.cliente_id AND NOT p.estado = 'Carrito';"
       conexionBD.query(query, [restaurante], (err, pedidos) => {
         if (err) {
             console.log(err);
@@ -21,7 +21,7 @@ exports.obtenerPedidos = async (request, response) => {
   exports.obtenerPedidosCodigo = async (request, response) => {
     try {
       const { restaurante,codigo } = request.query;
-      const query = "SELECT p.id pID,p.codigo pCODIGO,p.precio_total pTOTAL, p.estado pESTADO, CONCAT(c.nombre, ' ', c.apellido) cCLIENTE FROM pedidos p,clientes c WHERE p.restaurante_id = ? AND NOT p.estado = 'Completo' AND c.id =p.cliente_id AND p.codigo LIKE ?"
+      const query = "SELECT p.id pID,p.codigo pCODIGO,p.precio_total pTOTAL, p.estado pESTADO, CONCAT(c.nombre, ' ', c.apellido) cCLIENTE FROM pedidos p,clientes c WHERE p.restaurante_id = ? AND NOT p.estado = 'Completo' AND c.id =p.cliente_id AND p.codigo LIKE ? AND NOT p.estado = 'Carrito'"
       const codigoParam = `%${codigo}%`;
       conexionBD.query(query, [restaurante,codigoParam], (err, pedidos) => {
         if (err) {
